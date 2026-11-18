@@ -62,7 +62,7 @@ Before you can answer questions about a business, you have to understand it. Run
 
 Ask your agent *"Explain how this business works"* and the skill walks the layer, starting from `INDEX.md` and the Markdown export's ER diagram. It describes the main entities, their relationships and lifecycles, and lists what it could not establish. Process questions such as *"how long from order to shipment, by country?"* are then answered with checked SQL on top of the layer.
 
-**Scope:** this shows how the business is represented in data, which is usually the fastest way to learn it. It is not a process-mining tool: it does not reconstruct event logs, discover process variants or check conformance.
+**Scope:** this shows how the business is represented in data, which is usually the fastest way to learn it. It does not yet rebuild event sequences, discover process variants or check conformance. That is the next major step, see [Future development](#future-development).
 
 ---
 
@@ -233,7 +233,54 @@ Gold labels come from outside the code (the TPC-H specification and the trap war
 - **The model writes meaning, the toolkit writes facts.** Names, descriptions, metrics and glossary come from the agent and the human; keys, relationships and evidence scores come from data and declared metadata.
 - **Conservative by default.** Unknown integers are dimensions, not measures; identifiers are never summed; prices are non-additive; balances are semi-additive; a relationship whose parent is not a key is an error.
 
-**Known limits:** query-log join mining and an MCP server are planned for 1.1; Snowflake and Databricks exports follow the documented specs but are not executed against those platforms in CI; MetricFlow has single-column entities, so composite keys and role-playing joins are documented in the export notes rather than silently dropped.
+**Known limits:**
+- Snowflake and Databricks exports follow the documented specs but are not executed against those platforms in CI.
+- MetricFlow has single-column entities, so composite keys and role-playing joins are documented in the export notes rather than silently dropped.
+- Process mining, query-log join mining and an MCP server are not built yet; see [Future development](#future-development).
+
+---
+
+## Future development
+
+### Process discovery: from "how the data is shaped" to "how the work actually flows"
+
+**The goal:** answer *"How does our order-to-delivery process actually run?"* from the warehouse. That means the real sequence of steps, the common and rare variants, where time is lost, and where reality breaks the rules, all with SQL provenance and human review.
+
+**Today** the semantic layer shows how a business is represented in data: entities, relationships, lifecycle states and timestamps. **Planned:** rebuild event sequences, discover process variants and check conformance on top of it.
+
+**Why this belongs here:**
+- **The hard part of process mining is the event log.** In most projects the effort goes into finding the cases, activities and timestamps scattered across relational tables, and only then into analysing them [12]. The semantic layer already holds that knowledge, reviewed and evidence-backed:
+  - timestamp attributes (`ordered_at`, `shipped_at`) and status value domains are the *activities*;
+  - SCD2 history records *state changes*;
+  - entities are the *object types*;
+  - relationships say *which objects an event touches*.
+
+  So the event log can be generated from the model instead of hand-built for every project.
+- **Real processes are object-centric.** One order has many lines, shipments and payments. Forcing that into a single case id duplicates or loses events, which is the classic convergence/divergence problem. The OCEL 2.0 standard models events linked to many objects with qualified relationships [11]. That matches a semantic layer's entities and relationships one to one.
+
+**How it is planned to work:**
+1. **Lifecycle model (YAML, reviewed like everything else).** Each entity gets a `lifecycle`:
+   - activities proposed from evidence: timestamp columns, status domains, SCD2 or audit tables;
+   - optional `allowed_transitions` that a human approves, e.g. `placed → shipped → returned` and `placed → cancelled`.
+2. **`mautoontology events emit`.** This generates dialect-correct, read-only SQL that builds an OCEL 2.0-shaped event table: event id, activity, timestamp, and the related objects via declared relationships.
+   - It uses the same bring-your-own-executor approach as profiling.
+   - Local DuckDB/SQLite can run it directly.
+   - Export to OCEL 2.0 and XES (IEEE 1849-2023) [13], so the log also works in existing process-mining tools.
+3. **`mautoontology process`.** It reports, per object type:
+   - directly-follows graphs and variants with frequencies;
+   - throughput and waiting times between activities (median, p90), sliced by any dimension (country, channel, segment);
+   - results as Markdown with Mermaid diagrams.
+
+   It returns aggregates only, never personal data.
+4. **Conformance checking.** Observed transitions are compared with the approved `allowed_transitions`. Violations become review findings, e.g. *"312 orders were returned without a shipment"*. They use the same governance loop as relationships, so they are evidence for a human to judge, not facts.
+5. **Honest evaluation.** Processes with known variants, bottlenecks and seeded violations are injected into the trap warehouse, so the gold labels come from construction, not from the code under test. This is how relationship discovery is tested today.
+
+### Also planned
+
+- **Query-log join mining.** Parse Snowflake `ACCOUNT_USAGE.QUERY_HISTORY` and Databricks `system.query.history` with sqlglot. Joins analysts actually use become extra relationship evidence, and frequent aggregations become metric suggestions.
+- **MCP server.** Expose `context`, `check-sql`, `validate` and `index` as tools for any MCP-capable agent. Today every command has `--json` output.
+- **dbt 1.12 semantic format** export, alongside the classic `semantic_models` format.
+- **Live export validation** of Snowflake semantic views and Databricks metric views in CI, when warehouse access is available.
 
 ---
 
@@ -249,6 +296,9 @@ Gold labels come from outside the code (the TPC-H specification and the trap war
 8. A. Rostin, O. Albrecht, J. Bauckmann, F. Naumann, U. Leser. *A Machine Learning Approach to Foreign Key Discovery.* WebDB 2009.
 9. R. Kimball, M. Ross. *The Data Warehouse Toolkit*, 3rd ed. Wiley, 2013 (grain, additivity, slowly changing dimensions, fan and chasm traps).
 10. Apache Ossie (incubating), formerly Open Semantic Interchange. [github.com/apache/ossie](https://github.com/apache/ossie)
+11. A. Berti et al. *OCEL (Object-Centric Event Log) 2.0 Specification.* 2024. [arXiv:2403.01975](https://arxiv.org/abs/2403.01975) · [ocel-standard.org](https://www.ocel-standard.org/)
+12. W. M. P. van der Aalst. *Process Mining: Data Science in Action*, 2nd ed. Springer, 2016. DOI [10.1007/978-3-662-49851-4](https://doi.org/10.1007/978-3-662-49851-4)
+13. *IEEE 1849-2023: IEEE Standard for eXtensible Event Stream (XES) for Achieving Interoperability in Event Logs and Event Streams.* IEEE, 2023. [xes-standard.org](https://www.xes-standard.org/)
 
 More detail on how each finding maps to a feature: [docs/research.md](docs/research.md).
 
