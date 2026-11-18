@@ -77,6 +77,21 @@ Follow [the workflow guide](references/workflow.md) for the exact commands per p
    elements, currency, orphans, excluded rows). If the user confirms the answer, offer to save it as a
    verified query.
 
+## Workflow C - explain how the business works
+
+1. Build or refresh the layer (Workflow A, at least through `propose` and `index`).
+2. Read `semantics/INDEX.md` and run `mautoontology export --to markdown` for the ER diagram.
+3. Explain, citing entity, relationship and attribute ids:
+   - the core entities and what one row of each means;
+   - how they relate (cardinality, roles, bridges);
+   - lifecycles (status value domains and the timestamps on each entity);
+   - history and deletion rules;
+   - how money and quantities behave.
+4. List what the evidence could not establish: open review questions, missing descriptions, unknown
+   currencies. Present these as questions for the human, not as facts.
+5. Answer follow-up process questions (durations, conversion between statuses) with Workflow B. This is a
+   description of how the business is represented in data, not process mining.
+
 ## When to stop and ask
 
 - No relationship path connects the entities a question needs.

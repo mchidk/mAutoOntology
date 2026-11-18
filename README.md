@@ -47,6 +47,25 @@ mAutoOntology is built around exactly those findings:
 
 ---
 
+## Also: learn how an unfamiliar business works
+
+Before you can answer questions about a business, you have to understand it. Run mAutoOntology on a new client's or a new team's warehouse and the semantic layer becomes a map of how the business shows up in its data, built from evidence instead of tribal knowledge:
+
+| You learn | From |
+| :--- | :--- |
+| What the business is made of: customers, orders, products, accounts, and what one row of each means | entities and their grain |
+| How things connect: a customer places orders, an order has a billing and a shipping address, a shipment belongs to one order | relationships with cardinality and roles |
+| How things move through their lifecycle: `placed → shipped → returned`, `cancelled` | status value domains and each entity's timestamps (`ordered_at`, `shipped_at`) |
+| What changes over time and what gets removed | SCD2 history, snapshots, soft-delete filters |
+| How money and quantities behave | currencies, minor units, additive vs. semi-additive measures |
+| Where the data disagrees with its own names | ranked review questions (e.g. a `promo_id` that matches no promo) |
+
+Ask your agent *"Explain how this business works"* and the skill walks the layer, starting from `INDEX.md` and the Markdown export's ER diagram. It describes the main entities, their relationships and lifecycles, and lists what it could not establish. Process questions such as *"how long from order to shipment, by country?"* are then answered with checked SQL on top of the layer.
+
+**Scope:** this shows how the business is represented in data, which is usually the fastest way to learn it. It is not a process-mining tool: it does not reconstruct event logs, discover process variants or check conformance.
+
+---
+
 ## Quick start (5 minutes, no warehouse needed)
 
 ```bash

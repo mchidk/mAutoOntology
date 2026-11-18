@@ -47,7 +47,7 @@ First public release: a complete redesign around evidence, ontology-as-code and 
 
 ### Skill
 
-- Agent workflows for building/refreshing a semantic layer and for answering questions with mandatory `check-sql` repair.
+- Agent workflows for building/refreshing a semantic layer, answering questions with mandatory `check-sql` repair, and explaining how a business works from its data.
 - References: platform playbooks, modeling rules, check-sql repair recipes, review and answer templates.
 
 ### Evaluation
