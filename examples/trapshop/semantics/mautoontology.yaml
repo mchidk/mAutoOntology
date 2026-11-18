@@ -1,0 +1,7 @@
+schema: mautoontology/v1
+kind: config
+project:
+  name: trapshop
+  dialect: duckdb
+  default_domain: sales
+  description: 'Web shop: customers, orders, products and accounts. Example semantic layer built with mAutoOntology.'

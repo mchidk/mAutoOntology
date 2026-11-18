@@ -1,0 +1,497 @@
+{
+  "accepted": [
+    {
+      "cardinality": "many_to_one",
+      "child": "account_balances.account_id",
+      "evidence": [
+        {
+          "detail": "300/300 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "accounts(account_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "accounts.account_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "one_to_one",
+      "child": "accounts.customer_id",
+      "evidence": [
+        {
+          "detail": "300/300 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "customers(customer_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "customers.customer_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "addresses.customer_id",
+      "evidence": [
+        {
+          "detail": "400/400 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "customers(customer_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "customers.customer_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "categories.parent_category_id",
+      "evidence": [
+        {
+          "detail": "4/4 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "categories(category_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "role-playing (parent)",
+          "kind": "name_match",
+          "score": 0.75
+        }
+      ],
+      "parent": "categories.category_id",
+      "score": 0.712
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "customer_history.customer_id",
+      "evidence": [
+        {
+          "detail": "400/400 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "customers(customer_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "customers.customer_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "order_items.order_id",
+      "evidence": [
+        {
+          "detail": "3000/3000 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "orders(order_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "orders.order_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "order_items.product_id",
+      "evidence": [
+        {
+          "detail": "120/120 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "products(product_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "products.product_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "orders.customer_id",
+      "evidence": [
+        {
+          "detail": "400/400 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "customers(customer_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "customers.customer_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "orders.billing_address_id",
+      "evidence": [
+        {
+          "detail": "700/700 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "addresses(address_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "role-playing (billing)",
+          "kind": "name_match",
+          "score": 0.75
+        }
+      ],
+      "parent": "addresses.address_id",
+      "score": 0.888
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "orders.shipping_address_id",
+      "evidence": [
+        {
+          "detail": "700/700 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "addresses(address_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "role-playing (shipping)",
+          "kind": "name_match",
+          "score": 0.75
+        }
+      ],
+      "parent": "addresses.address_id",
+      "score": 0.888
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "product_categories.product_id",
+      "evidence": [
+        {
+          "detail": "120/120 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "products(product_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "products.product_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "product_categories.category_id",
+      "evidence": [
+        {
+          "detail": "20/20 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "categories(category_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "categories.category_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "one_to_one",
+      "child": "shipments.order_id",
+      "evidence": [
+        {
+          "detail": "2400/2400 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "orders(order_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "exact key-name match",
+          "kind": "name_match",
+          "score": 0.9
+        }
+      ],
+      "parent": "orders.order_id",
+      "score": 0.955
+    },
+    {
+      "cardinality": "many_to_one",
+      "child": "employees.manager_id",
+      "evidence": [
+        {
+          "detail": "3/3 distinct values found in parent",
+          "kind": "inclusion",
+          "score": 1.0
+        },
+        {
+          "kind": "uniqueness",
+          "ref": "employees(employee_id)",
+          "score": 1.0
+        },
+        {
+          "detail": "self-reference hint",
+          "kind": "name_match",
+          "score": 0.35
+        }
+      ],
+      "parent": "employees.employee_id",
+      "score": 0.52
+    }
+  ],
+  "rejected": [
+    {
+      "child": "addresses.customer_id",
+      "name_evidence": "exact key-name match",
+      "parent": "accounts.customer_id",
+      "ratio": 0.75,
+      "reason": "inclusion 75.0% below 95%"
+    },
+    {
+      "child": "customer_history.customer_id",
+      "name_evidence": "exact key-name match",
+      "parent": "accounts.customer_id",
+      "ratio": 0.75,
+      "reason": "inclusion 75.0% below 95%"
+    },
+    {
+      "child": "customers.customer_id",
+      "name_evidence": "exact key-name match",
+      "parent": "accounts.customer_id",
+      "ratio": 0.75,
+      "reason": "inclusion 75.0% below 95%"
+    },
+    {
+      "child": "order_items.order_id",
+      "name_evidence": "exact key-name match",
+      "parent": "shipments.order_id",
+      "ratio": 0.8,
+      "reason": "inclusion 80.0% below 95%"
+    },
+    {
+      "child": "orders.order_id",
+      "name_evidence": "exact key-name match",
+      "parent": "shipments.order_id",
+      "ratio": 0.8,
+      "reason": "inclusion 80.0% below 95%"
+    },
+    {
+      "child": "orders.customer_id",
+      "name_evidence": "exact key-name match",
+      "parent": "accounts.customer_id",
+      "ratio": 0.75,
+      "reason": "inclusion 75.0% below 95%"
+    },
+    {
+      "child": "orders.promo_id",
+      "name_evidence": "exact key-name match",
+      "parent": "promos.promo_id",
+      "ratio": 0.0,
+      "reason": "inclusion 0.0% below 95%"
+    },
+    {
+      "child": "customers.country_code",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "accounts.account_number",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "customers.country_code",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "orders.tracking_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "employees.employee_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "shipments.shipment_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "shipments.order_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "products.category_code",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "orders.tracking_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "categories.category_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "products.category_code",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "accounts.account_number",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "products.category_code",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "addresses.postal_code",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "orders.order_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "accounts.account_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "accounts.customer_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "addresses.address_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "customers.country_code",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "promos.promo_code",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "customer_history.customer_sk",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "customers.customer_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "products.category_code",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "promos.promo_code",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "customers.country_code",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "addresses.postal_code",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "products.product_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    },
+    {
+      "child": "order_items.line_no",
+      "name_evidence": "value-only (unmatched id column)",
+      "parent": "promos.promo_id",
+      "reason": "pruned before profiling (insufficient name or value evidence)"
+    }
+  ]
+}

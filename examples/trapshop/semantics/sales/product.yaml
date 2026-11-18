@@ -1,0 +1,43 @@
+schema: mautoontology/v1
+kind: entity
+id: product
+label: Product
+domain: sales
+entity_type: dimension
+source:
+  dataset: products
+grain: [product_id]
+keys:
+  primary: [product_id]
+attributes:
+  - id: product_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: product_name
+    role: dimension
+    family: string
+    semantic_type: name
+    nullable: false
+  - id: category_code
+    role: dimension
+    family: string
+    nullable: false
+  - id: list_price
+    role: measure
+    family: decimal
+    semantic_type: price
+    aggregation: avg
+    additivity: non_additive
+    nullable: false
+    money:
+      currency: EUR
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: products(product_id)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

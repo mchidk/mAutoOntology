@@ -1,0 +1,597 @@
+{
+  "dialect": "duckdb",
+  "sources": [
+    "duckdb:trapshop.duckdb"
+  ],
+  "datasets": [
+    {
+      "name": "account_balances",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "account_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "snapshot_date",
+          "data_type": "DATE",
+          "family": "date",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "balance",
+          "data_type": "DECIMAL(12,2)",
+          "family": "decimal",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 9000,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "accounts",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "account_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "customer_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "account_number",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 300,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "addresses",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "address_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "customer_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "city",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "postal_code",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 700,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "categories",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "category_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "category_name",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "parent_category_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 20,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "customer_history",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "customer_sk",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "customer_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "segment",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "valid_from",
+          "data_type": "DATE",
+          "family": "date",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "valid_to",
+          "data_type": "DATE",
+          "family": "date",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "is_current",
+          "data_type": "BOOLEAN",
+          "family": "boolean",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 533,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "customers",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "customer_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "email",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "full_name",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "country_code",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "family": "timestamp",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "is_deleted",
+          "data_type": "BOOLEAN",
+          "family": "boolean",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 400,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "employees",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "employee_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "manager_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "full_name",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "work_email",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 60,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "order_items",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "order_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "line_no",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "product_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "quantity",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "unit_price",
+          "data_type": "DECIMAL(10,2)",
+          "family": "decimal",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 6000,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "orders",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "order_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "customer_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "billing_address_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "shipping_address_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "status",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "currency",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "amount_cents",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "ordered_at",
+          "data_type": "TIMESTAMP",
+          "family": "timestamp",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "promo_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "tracking_id",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "is_deleted",
+          "data_type": "BOOLEAN",
+          "family": "boolean",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 3000,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "product_categories",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "product_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "category_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 400,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "products",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "product_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "product_name",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "category_code",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "list_price",
+          "data_type": "DECIMAL(10,2)",
+          "family": "decimal",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 120,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "promos",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "promo_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "promo_code",
+          "data_type": "VARCHAR",
+          "family": "string",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 5,
+      "depends_on": [],
+      "dbt_unique_id": null
+    },
+    {
+      "name": "shipments",
+      "kind": "table",
+      "columns": [
+        {
+          "name": "shipment_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "order_id",
+          "data_type": "BIGINT",
+          "family": "integer",
+          "nullable": true,
+          "description": null
+        },
+        {
+          "name": "shipped_at",
+          "data_type": "TIMESTAMP",
+          "family": "timestamp",
+          "nullable": true,
+          "description": null
+        }
+      ],
+      "description": null,
+      "primary_key": [],
+      "unique_keys": [],
+      "not_null": [],
+      "foreign_keys": [],
+      "accepted_values": {},
+      "row_count": 2400,
+      "depends_on": [],
+      "dbt_unique_id": null
+    }
+  ],
+  "semantic": {},
+  "version": 1
+}

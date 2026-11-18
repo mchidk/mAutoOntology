@@ -1,0 +1,93 @@
+{
+  "metadata": {"dbt_version": "1.10.0", "adapter_type": "snowflake", "project_name": "jaffle_shop"},
+  "nodes": {
+    "model.jaffle_shop.customers": {
+      "resource_type": "model", "name": "customers", "alias": "customers", "database": "ANALYTICS", "schema": "JAFFLE",
+      "relation_name": "ANALYTICS.JAFFLE.customers",
+      "description": "One row per customer with lifetime order stats.",
+      "columns": {
+        "customer_id": {"name": "customer_id", "description": "Primary key of a customer.", "data_type": null},
+        "first_name": {"name": "first_name", "description": "Customer first name.", "data_type": null},
+        "customer_type": {"name": "customer_type", "description": "new or returning", "data_type": null}
+      },
+      "depends_on": {"nodes": ["source.jaffle_shop.raw.customers"]}
+    },
+    "model.jaffle_shop.orders": {
+      "resource_type": "model", "name": "orders", "alias": "orders", "database": "ANALYTICS", "schema": "JAFFLE",
+      "relation_name": "ANALYTICS.JAFFLE.orders",
+      "description": "One row per order.",
+      "columns": {
+        "order_id": {"name": "order_id", "description": "Primary key of an order.", "data_type": null},
+        "customer_id": {"name": "customer_id", "description": "Foreign key to customers.", "data_type": null},
+        "status": {"name": "status", "description": "Order status.", "data_type": null},
+        "order_total": {"name": "order_total", "description": "Total amount in USD.", "data_type": null},
+        "ordered_at": {"name": "ordered_at", "description": "When the order was placed.", "data_type": null}
+      },
+      "depends_on": {"nodes": ["model.jaffle_shop.customers"]}
+    },
+    "test.jaffle_shop.unique_customers_customer_id.a1": {
+      "resource_type": "test", "name": "unique_customers_customer_id", "column_name": "customer_id",
+      "attached_node": "model.jaffle_shop.customers",
+      "test_metadata": {"name": "unique", "kwargs": {"column_name": "customer_id", "model": "{{ get_where_subquery(ref('customers')) }}"}},
+      "depends_on": {"nodes": ["model.jaffle_shop.customers"]}
+    },
+    "test.jaffle_shop.not_null_customers_customer_id.a2": {
+      "resource_type": "test", "name": "not_null_customers_customer_id", "column_name": "customer_id",
+      "attached_node": "model.jaffle_shop.customers",
+      "test_metadata": {"name": "not_null", "kwargs": {"column_name": "customer_id"}},
+      "depends_on": {"nodes": ["model.jaffle_shop.customers"]}
+    },
+    "test.jaffle_shop.unique_orders_order_id.a3": {
+      "resource_type": "test", "name": "unique_orders_order_id", "column_name": "order_id",
+      "attached_node": "model.jaffle_shop.orders",
+      "test_metadata": {"name": "unique", "kwargs": {"column_name": "order_id"}},
+      "depends_on": {"nodes": ["model.jaffle_shop.orders"]}
+    },
+    "test.jaffle_shop.relationships_orders_customer_id.a4": {
+      "resource_type": "test", "name": "relationships_orders_customer_id__customer_id__ref_customers_",
+      "column_name": "customer_id", "attached_node": "model.jaffle_shop.orders",
+      "test_metadata": {"name": "relationships", "kwargs": {"column_name": "customer_id", "to": "ref('customers')", "field": "customer_id",
+                                                             "model": "{{ get_where_subquery(ref('orders')) }}"}},
+      "depends_on": {"nodes": ["model.jaffle_shop.customers", "model.jaffle_shop.orders"]}
+    },
+    "test.jaffle_shop.accepted_values_orders_status.a5": {
+      "resource_type": "test", "name": "accepted_values_orders_status", "column_name": "status",
+      "attached_node": "model.jaffle_shop.orders",
+      "test_metadata": {"name": "accepted_values", "kwargs": {"column_name": "status", "values": ["placed", "shipped", "completed", "returned"]}},
+      "depends_on": {"nodes": ["model.jaffle_shop.orders"]}
+    }
+  },
+  "sources": {
+    "source.jaffle_shop.raw.customers": {
+      "resource_type": "source", "name": "customers", "source_name": "raw", "identifier": "raw_customers",
+      "database": "RAW", "schema": "JAFFLE_RAW", "relation_name": "RAW.JAFFLE_RAW.raw_customers",
+      "description": "Raw customer export.", "columns": {}
+    }
+  },
+  "semantic_models": {
+    "semantic_model.jaffle_shop.orders": {
+      "name": "orders", "description": "Order facts.",
+      "node_relation": {"alias": "orders", "schema_name": "JAFFLE", "database": "ANALYTICS", "relation_name": "ANALYTICS.JAFFLE.orders"},
+      "depends_on": {"nodes": ["model.jaffle_shop.orders"]},
+      "defaults": {"agg_time_dimension": "ordered_at"},
+      "entities": [{"name": "order", "type": "primary", "expr": "order_id"}, {"name": "customer", "type": "foreign", "expr": "customer_id"}],
+      "dimensions": [{"name": "ordered_at", "type": "time", "type_params": {"time_granularity": "day"}}, {"name": "status", "type": "categorical"}],
+      "measures": [{"name": "order_total", "agg": "sum", "expr": "order_total"}, {"name": "order_count", "agg": "count", "expr": "1"}]
+    }
+  },
+  "metrics": {
+    "metric.jaffle_shop.revenue": {
+      "name": "revenue", "label": "Revenue", "description": "Sum of completed order totals.", "type": "simple",
+      "type_params": {"measure": {"name": "order_total"}},
+      "filter": {"where_filters": [{"where_sql_template": "{{ Dimension('order__status') }} = 'completed'"}]}
+    },
+    "metric.jaffle_shop.orders": {
+      "name": "orders", "label": "Orders", "description": "Count of orders.", "type": "simple",
+      "type_params": {"measure": {"name": "order_count"}}
+    },
+    "metric.jaffle_shop.average_order_value": {
+      "name": "average_order_value", "label": "AOV", "description": "Revenue per order.", "type": "ratio",
+      "type_params": {"numerator": {"name": "revenue"}, "denominator": {"name": "orders"}}
+    }
+  }
+}

@@ -1,0 +1,15 @@
+schema: mautoontology/v1
+note: Ranked questions for a human reviewer. Answer them by editing the semantic files; this file is regenerated.
+questions:
+  - question: orders.promo_id is named like a key of promos.promo_id but only 0% of its values match. Is it a different code system, a stale reference, or a data-quality problem?
+    kind: name_matched_but_data_disagrees
+    impact: medium
+  - question: Which currency is account_balance.balance in?
+    kind: currency_unknown
+    impact: medium
+  - question: Which currency is order_item.unit_price in?
+    kind: currency_unknown
+    impact: medium
+  - question: Which currency is product.list_price in?
+    kind: currency_unknown
+    impact: medium

@@ -1,0 +1,72 @@
+schema: mautoontology/v1
+kind: entity
+id: customer
+label: Customer
+description: One row per customer. Soft-deleted customers are GDPR erasures.
+domain: sales
+entity_type: dimension
+source:
+  dataset: customers
+grain: [customer_id]
+keys:
+  primary: [customer_id]
+default_filters:
+  - id: not_deleted
+    sql: COALESCE(is_deleted, FALSE) = FALSE
+    reason: soft_delete
+    evidence:
+      - kind: heuristic
+        detail: soft-delete flag column is_deleted
+segments:
+  - id: nordic
+    label: Nordic customers
+    sql: country_code IN ('DK', 'SE')
+    synonyms: [nordics, scandinavia]
+    status: approved
+    reviewed_by: data-team
+attributes:
+  - id: customer_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: email
+    role: dimension
+    family: string
+    semantic_type: email
+    pii: contact
+    nullable: false
+  - id: full_name
+    role: dimension
+    family: string
+    semantic_type: name
+    pii: quasi_identifier
+    nullable: false
+  - id: country_code
+    role: dimension
+    family: string
+    semantic_type: country
+    nullable: false
+    description: ISO 3166-1 alpha-2 country of the customer.
+    synonyms:
+      - country
+      - market
+  - id: created_at
+    role: time
+    family: timestamp
+    time:
+      grains: [hour, day, week, month, quarter, year]
+    nullable: false
+  - id: is_deleted
+    role: dimension
+    family: boolean
+    semantic_type: flag
+    nullable: false
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: customers(customer_id)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

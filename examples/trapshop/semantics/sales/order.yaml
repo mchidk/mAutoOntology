@@ -1,0 +1,172 @@
+schema: mautoontology/v1
+kind: entity
+id: order
+label: Order
+description: One row per web-shop order. Cancelled and returned orders are kept; soft-deleted rows are test data.
+domain: sales
+entity_type: fact
+source:
+  dataset: orders
+grain: [order_id]
+keys:
+  primary: [order_id]
+  unique:
+    - [tracking_id]
+default_filters:
+  - id: not_deleted
+    sql: COALESCE(is_deleted, FALSE) = FALSE
+    reason: soft_delete
+    evidence:
+      - kind: heuristic
+        detail: soft-delete flag column is_deleted
+attributes:
+  - id: order_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: customer_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: billing_address_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: shipping_address_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: status
+    role: dimension
+    family: string
+    semantic_type: status
+    values: [shipped, cancelled, placed, returned]
+    values_complete: true
+    nullable: false
+    evidence:
+      - kind: profile
+        detail: 4 distinct values observed
+    description: 'Order lifecycle: placed -> shipped -> (returned); cancelled orders never ship.'
+    synonyms:
+      - order status
+  - id: currency
+    role: dimension
+    family: string
+    semantic_type: enum
+    values: [DKK, EUR, USD]
+    values_complete: true
+    nullable: false
+    evidence:
+      - kind: profile
+        detail: 3 distinct values observed
+  - id: amount_cents
+    role: measure
+    family: integer
+    semantic_type: money
+    money:
+      currency_attr: currency
+    scale: 0.01
+    aggregation: sum
+    additivity: additive
+    nullable: false
+    description: Order amount in minor units (cents) of `currency`.
+  - id: ordered_at
+    role: time
+    family: timestamp
+    time:
+      grains: [hour, day, week, month, quarter, year]
+    nullable: false
+    description: When the customer placed the order (UTC).
+  - id: promo_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: true
+  - id: tracking_id
+    role: identifier
+    family: string
+    semantic_type: identifier
+    nullable: false
+  - id: is_deleted
+    role: dimension
+    family: boolean
+    semantic_type: flag
+    nullable: false
+relationships:
+  - id: order__billing_address
+    to: address
+    role: billing
+    on:
+      - from: billing_address_id
+        to: address_id
+    cardinality: many_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 700/700 distinct values found in parent
+      - kind: uniqueness
+        ref: addresses(address_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.75
+        detail: role-playing (billing)
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+  - id: order__customer
+    to: customer
+    on:
+      - from: customer_id
+        to: customer_id
+    cardinality: many_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 400/400 distinct values found in parent
+      - kind: uniqueness
+        ref: customers(customer_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.9
+        detail: exact key-name match
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+  - id: order__shipping_address
+    to: address
+    role: shipping
+    on:
+      - from: shipping_address_id
+        to: address_id
+    cardinality: many_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 700/700 distinct values found in parent
+      - kind: uniqueness
+        ref: addresses(address_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.75
+        detail: role-playing (shipping)
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: orders(order_id)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

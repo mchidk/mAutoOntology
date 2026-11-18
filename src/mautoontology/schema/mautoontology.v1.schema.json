@@ -1,0 +1,369 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mchidk/mAutoOntology/blob/main/src/mautoontology/schema/mautoontology.v1.schema.json",
+  "title": "mAutoOntology v1 semantic file",
+  "description": "One YAML file of a mAutoOntology semantic layer. The `kind` field selects the shape.",
+  "type": "object",
+  "required": ["schema", "kind"],
+  "properties": {
+    "schema": { "const": "mautoontology/v1" },
+    "kind": { "enum": ["config", "entity", "metrics", "glossary", "verified_queries"] }
+  },
+  "allOf": [
+    { "if": { "properties": { "kind": { "const": "config" } } }, "then": { "$ref": "#/$defs/ConfigFile" } },
+    { "if": { "properties": { "kind": { "const": "entity" } } }, "then": { "$ref": "#/$defs/EntityFile" } },
+    { "if": { "properties": { "kind": { "const": "metrics" } } }, "then": { "$ref": "#/$defs/MetricsFile" } },
+    { "if": { "properties": { "kind": { "const": "glossary" } } }, "then": { "$ref": "#/$defs/GlossaryFile" } },
+    { "if": { "properties": { "kind": { "const": "verified_queries" } } }, "then": { "$ref": "#/$defs/VerifiedQueriesFile" } }
+  ],
+  "$defs": {
+    "Id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "maxLength": 128 },
+    "QualifiedId": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)?$" },
+    "Status": { "enum": ["draft", "proposed", "approved", "deprecated", "rejected"] },
+    "Origin": { "enum": ["generated", "human", "dbt", "snowflake", "databricks", "import"] },
+    "Evidence": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "declared_fk", "declared_key", "dbt_test", "dbt_semantic", "dbt_doc", "inclusion", "uniqueness",
+            "name_match", "type_match", "profile", "query_log", "verified_query", "human", "doc", "heuristic"
+          ]
+        },
+        "ref": { "type": "string" },
+        "score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "detail": { "type": ["string", "number", "boolean", "object"] }
+      },
+      "additionalProperties": false
+    },
+    "Governance": {
+      "type": "object",
+      "properties": {
+        "status": { "$ref": "#/$defs/Status" },
+        "origin": { "$ref": "#/$defs/Origin" },
+        "owner": { "type": "string" },
+        "reviewed_by": { "type": "string" },
+        "reviewed_at": { "type": ["string", "integer"] },
+        "rationale": { "type": "string" },
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/Evidence" } }
+      }
+    },
+    "Strings": { "type": "array", "items": { "type": "string" } },
+    "ColumnList": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "ConfigFile": {
+      "type": "object",
+      "required": ["project"],
+      "properties": {
+        "schema": true,
+        "kind": true,
+        "project": {
+          "type": "object",
+          "required": ["name", "dialect"],
+          "properties": {
+            "name": { "type": "string" },
+            "dialect": { "type": "string" },
+            "default_domain": { "$ref": "#/$defs/Id" },
+            "description": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "sources": { "type": "array", "items": { "type": "string" } },
+        "conventions": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "EntityFile": {
+      "type": "object",
+      "required": ["id", "source"],
+      "allOf": [{ "$ref": "#/$defs/Governance" }],
+      "properties": {
+        "schema": true,
+        "kind": true,
+        "id": { "$ref": "#/$defs/Id" },
+        "label": { "type": "string" },
+        "description": { "type": "string" },
+        "domain": { "$ref": "#/$defs/Id" },
+        "entity_type": { "enum": ["fact", "dimension", "bridge", "snapshot", "event", "history", "other"] },
+        "source": {
+          "type": "object",
+          "required": ["dataset"],
+          "properties": {
+            "dataset": { "type": "string" },
+            "dbt": { "type": "string" },
+            "sql": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "grain": { "$ref": "#/$defs/ColumnList" },
+        "grain_description": { "type": "string" },
+        "keys": {
+          "type": "object",
+          "properties": {
+            "primary": { "$ref": "#/$defs/ColumnList" },
+            "unique": { "type": "array", "items": { "$ref": "#/$defs/ColumnList" } }
+          },
+          "additionalProperties": false
+        },
+        "history": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "enum": ["scd2", "snapshot", "append_only"] },
+            "valid_from": { "type": "string" },
+            "valid_to": { "type": "string" },
+            "current": { "type": "string" },
+            "snapshot_at": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "default_filters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "sql", "reason"],
+            "properties": {
+              "id": { "$ref": "#/$defs/Id" },
+              "sql": { "type": "string" },
+              "reason": { "enum": ["soft_delete", "scd2_current", "test_data", "business_rule", "other"] },
+              "description": { "type": "string" },
+              "evidence": { "type": "array", "items": { "$ref": "#/$defs/Evidence" } }
+            },
+            "additionalProperties": false
+          }
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "sql"],
+            "allOf": [{ "$ref": "#/$defs/Governance" }],
+            "properties": {
+              "id": { "$ref": "#/$defs/Id" },
+              "sql": { "type": "string" },
+              "label": { "type": "string" },
+              "description": { "type": "string" },
+              "synonyms": { "$ref": "#/$defs/Strings" },
+              "status": true, "origin": true, "owner": true, "reviewed_by": true, "reviewed_at": true,
+              "rationale": true, "evidence": true
+            },
+            "additionalProperties": false
+          }
+        },
+        "attributes": { "type": "array", "items": { "$ref": "#/$defs/Attribute" } },
+        "relationships": { "type": "array", "items": { "$ref": "#/$defs/Relationship" } },
+        "caveats": { "$ref": "#/$defs/Strings" },
+        "synonyms": { "$ref": "#/$defs/Strings" },
+        "status": true, "origin": true, "owner": true, "reviewed_by": true, "reviewed_at": true,
+        "rationale": true, "evidence": true
+      },
+      "additionalProperties": false
+    },
+    "Attribute": {
+      "type": "object",
+      "required": ["id", "role"],
+      "allOf": [{ "$ref": "#/$defs/Governance" }],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "column": { "type": "string" },
+        "expr": { "type": "string" },
+        "label": { "type": "string" },
+        "description": { "type": "string" },
+        "role": { "enum": ["identifier", "dimension", "time", "measure", "text"] },
+        "family": {
+          "enum": ["integer", "decimal", "float", "string", "boolean", "date", "time", "timestamp", "timestamp_tz", "binary", "json", "array", "other"]
+        },
+        "semantic_type": { "type": "string" },
+        "time": {
+          "type": "object",
+          "properties": {
+            "grains": {
+              "type": "array",
+              "items": { "enum": ["second", "minute", "hour", "day", "week", "month", "quarter", "year"] }
+            },
+            "timezone": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "values": { "type": "array", "items": { "type": ["string", "number", "boolean"] } },
+        "values_complete": { "type": "boolean" },
+        "money": {
+          "type": "object",
+          "properties": {
+            "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+            "currency_attr": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "scale": { "type": "number" },
+        "aggregation": { "enum": ["sum", "avg", "min", "max", "count", "count_distinct", "median", "none"] },
+        "additivity": { "enum": ["additive", "semi_additive", "non_additive"] },
+        "non_additive_over": { "type": "string" },
+        "pii": { "enum": ["none", "direct_identifier", "contact", "sensitive", "quasi_identifier"] },
+        "nullable": { "type": "boolean" },
+        "synonyms": { "$ref": "#/$defs/Strings" },
+        "caveats": { "$ref": "#/$defs/Strings" },
+        "status": true, "origin": true, "owner": true, "reviewed_by": true, "reviewed_at": true,
+        "rationale": true, "evidence": true
+      },
+      "additionalProperties": false
+    },
+    "Relationship": {
+      "type": "object",
+      "required": ["id", "to", "cardinality"],
+      "allOf": [{ "$ref": "#/$defs/Governance" }],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "to": { "$ref": "#/$defs/Id" },
+        "role": { "$ref": "#/$defs/Id" },
+        "on": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["from", "to"],
+            "properties": { "from": { "type": "string" }, "to": { "type": "string" } },
+            "additionalProperties": false
+          }
+        },
+        "cardinality": { "enum": ["many_to_one", "one_to_one", "many_to_many"] },
+        "optional": { "type": "boolean" },
+        "through": { "$ref": "#/$defs/Id" },
+        "as_of": {
+          "type": "object",
+          "required": ["at"],
+          "properties": {
+            "at": { "type": "string" },
+            "valid_from": { "type": "string" },
+            "valid_to": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "condition": { "type": "string" },
+        "description": { "type": "string" },
+        "status": true, "origin": true, "owner": true, "reviewed_by": true, "reviewed_at": true,
+        "rationale": true, "evidence": true
+      },
+      "$comment": "many_to_many requires through; all other cardinalities require on",
+      "if": { "properties": { "cardinality": { "const": "many_to_many" } } },
+      "then": { "required": ["through"] },
+      "else": { "required": ["on"] },
+      "additionalProperties": false
+    },
+    "MetricsFile": {
+      "type": "object",
+      "required": ["metrics"],
+      "properties": {
+        "schema": true,
+        "kind": true,
+        "domain": { "$ref": "#/$defs/Id" },
+        "description": { "type": "string" },
+        "metrics": { "type": "array", "items": { "$ref": "#/$defs/Metric" } }
+      },
+      "additionalProperties": false
+    },
+    "Metric": {
+      "type": "object",
+      "required": ["id", "type"],
+      "allOf": [
+        { "$ref": "#/$defs/Governance" },
+        { "if": { "properties": { "type": { "const": "simple" } } }, "then": { "required": ["entity", "agg"] } },
+        { "if": { "properties": { "type": { "const": "ratio" } } }, "then": { "required": ["numerator", "denominator"] } },
+        { "if": { "properties": { "type": { "const": "derived" } } }, "then": { "required": ["expr", "inputs"] } }
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "label": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "enum": ["simple", "ratio", "derived"] },
+        "entity": { "$ref": "#/$defs/Id" },
+        "agg": { "enum": ["sum", "avg", "min", "max", "count", "count_distinct", "median"] },
+        "expr": { "type": "string" },
+        "filter": { "type": "string" },
+        "numerator": { "$ref": "#/$defs/Id" },
+        "denominator": { "$ref": "#/$defs/Id" },
+        "inputs": { "type": "array", "items": { "$ref": "#/$defs/Id" }, "minItems": 1 },
+        "time": { "type": "string" },
+        "grains": {
+          "type": "array",
+          "items": { "enum": ["second", "minute", "hour", "day", "week", "month", "quarter", "year"] }
+        },
+        "unit": { "type": "string" },
+        "synonyms": { "$ref": "#/$defs/Strings" },
+        "disambiguation": { "type": "string" },
+        "status": true, "origin": true, "owner": true, "reviewed_by": true, "reviewed_at": true,
+        "rationale": true, "evidence": true
+      },
+      "additionalProperties": false
+    },
+    "GlossaryFile": {
+      "type": "object",
+      "required": ["terms"],
+      "properties": {
+        "schema": true,
+        "kind": true,
+        "terms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "definition"],
+            "allOf": [{ "$ref": "#/$defs/Governance" }],
+            "properties": {
+              "id": { "$ref": "#/$defs/Id" },
+              "label": { "type": "string" },
+              "definition": { "type": "string" },
+              "synonyms": { "$ref": "#/$defs/Strings" },
+              "maps_to": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^(entity|attribute|metric|segment|relationship):[a-z0-9_.]+$" }
+              },
+              "disambiguation": { "type": "string" },
+              "status": true, "origin": true, "owner": true, "reviewed_by": true, "reviewed_at": true,
+              "rationale": true, "evidence": true
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "VerifiedQueriesFile": {
+      "type": "object",
+      "required": ["queries"],
+      "properties": {
+        "schema": true,
+        "kind": true,
+        "queries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "question", "sql"],
+            "properties": {
+              "id": { "$ref": "#/$defs/Id" },
+              "question": { "type": "string" },
+              "sql": { "type": "string" },
+              "dialect": { "type": "string" },
+              "uses": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^(entity|attribute|metric|segment|relationship):[a-z0-9_.]+$" }
+              },
+              "expected": {
+                "type": "object",
+                "properties": {
+                  "columns": { "$ref": "#/$defs/Strings" },
+                  "row_count": { "type": "integer", "minimum": 0 }
+                },
+                "additionalProperties": false
+              },
+              "verified_by": { "type": "string" },
+              "verified_at": { "type": ["string", "integer"] },
+              "notes": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

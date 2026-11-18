@@ -1,0 +1,30 @@
+schema: mautoontology/v1
+kind: entity
+id: promo
+label: Promo
+domain: sales
+entity_type: dimension
+source:
+  dataset: promos
+grain: [promo_id]
+keys:
+  primary: [promo_id]
+  unique:
+    - [promo_code]
+attributes:
+  - id: promo_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: promo_code
+    role: identifier
+    family: string
+    semantic_type: identifier
+    nullable: false
+status: proposed
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: promos(promo_id)
+    score: 1.0

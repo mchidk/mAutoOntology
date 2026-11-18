@@ -1,0 +1,30 @@
+schema: mautoontology/v1
+kind: verified_queries
+queries:
+  - id: net_revenue_by_month_and_currency
+    question: What was net revenue per month, by currency?
+    sql: "SELECT DATE_TRUNC('month', o.ordered_at) AS month, o.currency, SUM(o.amount_cents) * 0.01 AS net_revenue\nFROM orders AS o\nWHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.status NOT IN ('cancelled', 'returned')\nGROUP BY 1, 2\nORDER BY 1, 2"
+    dialect: duckdb
+    uses: [metric:net_revenue, entity:order]
+    expected:
+      columns: [month, currency, net_revenue]
+    verified_by: finance
+    verified_at: '2026-11-18'
+  - id: orders_per_country
+    question: How many orders did customers in each country place?
+    sql: "SELECT c.country_code, COUNT(DISTINCT o.order_id) AS orders\nFROM orders AS o\nJOIN customers AS c ON o.customer_id = c.customer_id\nWHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE AND o.status <> 'cancelled'\nGROUP BY c.country_code\nORDER BY c.country_code"
+    dialect: duckdb
+    uses: [metric:order_count, entity:customer, relationship:order__customer]
+    expected:
+      columns: [country_code, orders]
+      row_count: 4
+    verified_by: sales-ops
+    verified_at: '2026-11-18'
+  - id: units_per_order_with_amount
+    question: For each order, how many units and what amount?
+    sql: "WITH items AS (\n  SELECT order_id, SUM(quantity) AS units FROM order_items GROUP BY order_id\n)\nSELECT o.order_id, o.currency, o.amount_cents * 0.01 AS amount, i.units\nFROM orders AS o\nJOIN items AS i ON i.order_id = o.order_id\nWHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.status NOT IN ('cancelled', 'returned')\nORDER BY o.order_id"
+    dialect: duckdb
+    uses: [entity:order, entity:order_item, metric:units_sold]
+    notes: Aggregate order lines in a CTE first so order amounts are not repeated (fan-out).
+    verified_by: data-team
+    verified_at: '2026-11-18'

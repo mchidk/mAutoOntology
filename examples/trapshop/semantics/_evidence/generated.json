@@ -1,0 +1,112 @@
+{
+  "sales/account.yaml": {
+    "@top": "3bf0ef191b4b4294",
+    "attribute:account_id": "971ec28ec7b3731b",
+    "attribute:account_number": "d557c809c42a4838",
+    "attribute:customer_id": "0f49a04147531bd2",
+    "relationship:account__customer": "6f080354ac36c9f5"
+  },
+  "sales/account_balance.yaml": {
+    "@top": "d818448fde4a7941",
+    "attribute:account_id": "971ec28ec7b3731b",
+    "attribute:balance": "3faa8b672ca9a231",
+    "attribute:snapshot_date": "7cb5fb3c80d3371e",
+    "relationship:account_balance__account": "14778bd5c550f1cf"
+  },
+  "sales/address.yaml": {
+    "@top": "e5a9a8dffa7fd234",
+    "attribute:address_id": "8c4163e6e8a6f036",
+    "attribute:city": "c2483eb26d3358f5",
+    "attribute:customer_id": "0f49a04147531bd2",
+    "attribute:postal_code": "8a738c670e650be7",
+    "relationship:address__customer": "f7c73127e7575f09"
+  },
+  "sales/category.yaml": {
+    "@top": "2b6c0b44fe8c950f",
+    "attribute:category_id": "fb31d8c18fc0cbf1",
+    "attribute:category_name": "532735f878473592",
+    "attribute:parent_category_id": "25afa493c74f224c",
+    "relationship:category__parent_category": "c5c3fb6e38638278",
+    "relationship:category__product": "ae1adc4c94b0aad5"
+  },
+  "sales/customer.yaml": {
+    "@top": "1284d8928f9313ad",
+    "attribute:country_code": "cb067917dc33a6ec",
+    "attribute:created_at": "8a3eaf1aef5b01af",
+    "attribute:customer_id": "0f49a04147531bd2",
+    "attribute:email": "339ebfa3f06788df",
+    "attribute:full_name": "c0276259d05b20c5",
+    "attribute:is_deleted": "7d1cdfc9bbb1dd33"
+  },
+  "sales/customer_history.yaml": {
+    "@top": "15d576471db0ee0b",
+    "attribute:customer_id": "0f49a04147531bd2",
+    "attribute:customer_sk": "cf3d81afec4a3765",
+    "attribute:is_current": "b5bb5f33ed1fda82",
+    "attribute:segment": "ddd2263bfa4a7cbd",
+    "attribute:valid_from": "42fc206630391fff",
+    "attribute:valid_to": "ae26964651b5d740",
+    "relationship:customer_history__customer": "97381dc34cd0aba5"
+  },
+  "sales/employee.yaml": {
+    "@top": "1f1e787163c9c38a",
+    "attribute:employee_id": "7cc3d27931cc6ed1",
+    "attribute:full_name": "c0276259d05b20c5",
+    "attribute:manager_id": "d5bb33b15bd62353",
+    "attribute:work_email": "f9573c1c62943bcb",
+    "relationship:employee__manager_employee": "cbfbc15aece9e05f"
+  },
+  "sales/order.yaml": {
+    "@top": "2a849728821d1605",
+    "attribute:amount_cents": "674cf690a39ff8a8",
+    "attribute:billing_address_id": "b81e53b07b850545",
+    "attribute:currency": "985ff4d58bb6f100",
+    "attribute:customer_id": "0f49a04147531bd2",
+    "attribute:is_deleted": "7d1cdfc9bbb1dd33",
+    "attribute:order_id": "c3422a5369f3a031",
+    "attribute:ordered_at": "058bdbd97287fc7c",
+    "attribute:promo_id": "9ee96e538af52061",
+    "attribute:shipping_address_id": "72337e45d46bbecb",
+    "attribute:status": "c61d6f9773adcddd",
+    "attribute:tracking_id": "f231a0b5bdaf7cb8",
+    "relationship:order__billing_address": "e843c206c60ebad9",
+    "relationship:order__customer": "516fb442c1c4927e",
+    "relationship:order__shipping_address": "0e1a466af2afd73c"
+  },
+  "sales/order_item.yaml": {
+    "@top": "55091ddb38747809",
+    "attribute:line_no": "9d68a896265bed38",
+    "attribute:order_id": "c3422a5369f3a031",
+    "attribute:product_id": "7fe1c67481fe68b7",
+    "attribute:quantity": "ea8d88cb206b9891",
+    "attribute:unit_price": "c45e294344d41096",
+    "relationship:order_item__order": "b03ca95b8d3593de",
+    "relationship:order_item__product": "ce9590cb6abb213a"
+  },
+  "sales/product.yaml": {
+    "@top": "f57d4346ee116469",
+    "attribute:category_code": "265671d63ddacce8",
+    "attribute:list_price": "03feeb75360b2d43",
+    "attribute:product_id": "7fe1c67481fe68b7",
+    "attribute:product_name": "5cf402e215f70b12"
+  },
+  "sales/product_category.yaml": {
+    "@top": "97f279507d7d34ca",
+    "attribute:category_id": "fb31d8c18fc0cbf1",
+    "attribute:product_id": "7fe1c67481fe68b7",
+    "relationship:product_category__category": "789b74ce166fbdc6",
+    "relationship:product_category__product": "4d3e38090c20b46f"
+  },
+  "sales/promo.yaml": {
+    "@top": "b345ee27b6c822a0",
+    "attribute:promo_code": "5720b01edb0aa313",
+    "attribute:promo_id": "3eb2605dc9fc8684"
+  },
+  "sales/shipment.yaml": {
+    "@top": "d1bf9d286ba28418",
+    "attribute:order_id": "c3422a5369f3a031",
+    "attribute:shipment_id": "99a14204760cbd01",
+    "attribute:shipped_at": "91d3fb28b15f2f0c",
+    "relationship:shipment__order": "27dc68847a939fb6"
+  }
+}

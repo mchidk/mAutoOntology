@@ -1,0 +1,73 @@
+schema: mautoontology/v1
+kind: entity
+id: product_category
+label: Product Category
+domain: sales
+entity_type: bridge
+source:
+  dataset: product_categories
+grain: [product_id, category_id]
+keys:
+  primary: [product_id, category_id]
+attributes:
+  - id: product_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: category_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+relationships:
+  - id: product_category__category
+    to: category
+    on:
+      - from: category_id
+        to: category_id
+    cardinality: many_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 20/20 distinct values found in parent
+      - kind: uniqueness
+        ref: categories(category_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.9
+        detail: exact key-name match
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+  - id: product_category__product
+    to: product
+    on:
+      - from: product_id
+        to: product_id
+    cardinality: many_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 120/120 distinct values found in parent
+      - kind: uniqueness
+        ref: products(product_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.9
+        detail: exact key-name match
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: product_categories(product_id, category_id)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

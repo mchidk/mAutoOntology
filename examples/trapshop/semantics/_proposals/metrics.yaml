@@ -1,0 +1,46 @@
+schema: mautoontology/v1
+note: Draft metric suggestions. Copy, rename and approve the ones that match a real business definition.
+metrics:
+  - id: account_balance_count
+    type: simple
+    entity: account_balance
+    agg: count
+    expr: '*'
+    time: snapshot_date
+    status: draft
+    origin: generated
+    rationale: row count of the entity grain; confirm the business name before approving
+  - id: order_item_count
+    type: simple
+    entity: order_item
+    agg: count
+    expr: '*'
+    status: draft
+    origin: generated
+    rationale: row count of the entity grain; confirm the business name before approving
+  - id: total_quantity
+    type: simple
+    entity: order_item
+    agg: sum
+    expr: quantity
+    status: draft
+    origin: generated
+    rationale: additive measure; decide gross vs net, required filters and currency handling before approving
+  - id: order_count
+    type: simple
+    entity: order
+    agg: count
+    expr: '*'
+    time: ordered_at
+    status: draft
+    origin: generated
+    rationale: row count of the entity grain; confirm the business name before approving
+  - id: total_amount
+    type: simple
+    entity: order
+    agg: sum
+    expr: amount_cents * 0.01
+    time: ordered_at
+    status: draft
+    origin: generated
+    rationale: additive measure; decide gross vs net, required filters and currency handling before approving; amounts are in mixed currencies (currency)

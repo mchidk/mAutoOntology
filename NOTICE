@@ -1,0 +1,7 @@
+mAutoOntology
+Copyright 2026 Michael Christensen
+
+This product includes the Apache Ossie (incubating) core JSON schema
+(src/mautoontology/schema/ossie-0.3.0.dev0.schema.json), copied unmodified from
+https://github.com/apache/ossie at commit 4d82209682b5b5095026897e6c7bab03bc3c5c58,
+licensed under the Apache License, Version 2.0.

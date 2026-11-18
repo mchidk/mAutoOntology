@@ -1,0 +1,80 @@
+schema: mautoontology/v1
+kind: metrics
+domain: sales
+metrics:
+  - id: gross_revenue
+    label: Gross revenue
+    description: Value of all non-cancelled orders, including later returns.
+    type: simple
+    entity: order
+    agg: sum
+    expr: amount_cents * 0.01
+    filter: status <> 'cancelled'
+    time: ordered_at
+    grains: [day, week, month, quarter, year]
+    unit: currency
+    synonyms: [gross sales, gmv]
+    disambiguation: Includes returned orders. Use net_revenue when someone just says revenue.
+    status: approved
+    origin: human
+    owner: finance
+    reviewed_by: finance
+    reviewed_at: '2026-11-18'
+  - id: net_revenue
+    label: Net revenue
+    description: Value of orders that were neither cancelled nor returned.
+    type: simple
+    entity: order
+    agg: sum
+    expr: amount_cents * 0.01
+    filter: status NOT IN ('cancelled', 'returned')
+    time: ordered_at
+    grains: [day, week, month, quarter, year]
+    unit: currency
+    synonyms: [revenue, sales, net sales, turnover]
+    disambiguation: "The default meaning of 'revenue'. Amounts are in the order currency: group by currency or convert."
+    status: approved
+    origin: human
+    owner: finance
+    reviewed_by: finance
+    reviewed_at: '2026-11-18'
+  - id: order_count
+    label: Orders
+    description: Number of non-cancelled orders.
+    type: simple
+    entity: order
+    agg: count_distinct
+    expr: order_id
+    filter: status <> 'cancelled'
+    time: ordered_at
+    synonyms: [number of orders, order volume]
+    status: approved
+    origin: human
+    owner: sales-ops
+    reviewed_by: sales-ops
+    reviewed_at: '2026-11-18'
+  - id: average_order_value
+    label: Average order value
+    description: Net revenue per non-cancelled order.
+    type: ratio
+    numerator: net_revenue
+    denominator: order_count
+    synonyms: [aov, basket size]
+    status: approved
+    origin: human
+    owner: finance
+    reviewed_by: finance
+    reviewed_at: '2026-11-18'
+  - id: units_sold
+    label: Units sold
+    description: Quantity of products on order lines.
+    type: simple
+    entity: order_item
+    agg: sum
+    expr: quantity
+    synonyms: [items sold, quantity sold]
+    status: approved
+    origin: human
+    owner: sales-ops
+    reviewed_by: sales-ops
+    reviewed_at: '2026-11-18'

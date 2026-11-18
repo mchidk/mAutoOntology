@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Local databases (test fixtures are generated at test time)
+*.db
+*.duckdb
+*.duckdb.wal
+*.sqlite
+*.sqlite3
+
+# Rebuildable mAutoOntology cache inside user projects
+semantics/.cache/
+
+# Never commit credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editors / OS / local agent state
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+.opencode/*
+!.opencode/skills/
+
+# Example outputs (regenerate with `mautoontology export`)
+examples/trapshop/exports/
+semantics_export/

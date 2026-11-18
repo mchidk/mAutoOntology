@@ -1,0 +1,89 @@
+# Seeded check-sql corpus against examples/trapshop.
+# `expect` = rule ids that MUST be reported; `forbid` = rule ids that must NOT be reported.
+# `ok` = whether the query must pass (no errors). Dialect defaults to duckdb.
+cases:
+  # ---------------------------------------------------------------- MAO001
+  - {id: dml_delete, sql: "DELETE FROM orders", expect: [MAO001], ok: false}
+  - {id: dml_update, sql: "UPDATE orders SET status = 'x'", expect: [MAO001], ok: false}
+  - {id: ddl_drop, sql: "DROP TABLE orders", expect: [MAO001], ok: false}
+  - {id: two_statements, sql: "SELECT 1; SELECT 2", expect: [MAO001], ok: false}
+  - {id: parse_error, sql: "SELEC order_id FROM orders", expect: [MAO001], ok: false}
+  - {id: insert_select, sql: "INSERT INTO promos SELECT * FROM promos", expect: [MAO001], ok: false}
+  # ---------------------------------------------------------------- MAO002
+  - {id: unknown_table, sql: "SELECT * FROM invoices", expect: [MAO002], ok: false}
+  - {id: unknown_table_in_join, sql: "SELECT o.order_id FROM orders o JOIN refunds r ON r.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE", expect: [MAO002], ok: false}
+  # ---------------------------------------------------------------- MAO003
+  - {id: unknown_column, sql: "SELECT o.amount FROM orders o WHERE COALESCE(o.is_deleted, FALSE) = FALSE", expect: [MAO003], ok: false}
+  - {id: unknown_unqualified_column, sql: "SELECT revenue FROM orders WHERE COALESCE(is_deleted, FALSE) = FALSE", expect: [MAO003], ok: false}
+  - {id: ambiguous_column, sql: "SELECT customer_id FROM orders o JOIN customers c ON o.customer_id = c.customer_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE", expect: [MAO003], ok: false}
+  # ---------------------------------------------------------------- MAO004
+  - {id: wrong_join_key, sql: "SELECT a.city FROM orders o JOIN addresses a ON o.customer_id = a.address_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE", expect: [MAO004], ok: false}
+  - {id: no_relationship, sql: "SELECT p.product_name FROM orders o JOIN products p ON o.order_id = p.product_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE", expect: [MAO004], ok: false}
+  - {id: decoy_promo_join, sql: "SELECT pr.promo_code FROM orders o JOIN promos pr ON pr.promo_id = o.promo_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE", expect: [MAO004], ok: false}
+  - {id: join_in_where_wrong, sql: "SELECT COUNT(*) FROM orders o, addresses a WHERE o.order_id = a.address_id AND COALESCE(o.is_deleted, FALSE) = FALSE", expect: [MAO004], ok: false}
+  - {id: self_join_wrong_column, sql: "SELECT e.full_name FROM employees e JOIN employees m ON e.employee_id = m.employee_id", expect: [MAO004], ok: false}
+  # ---------------------------------------------------------------- MAO005
+  - {id: cartesian_comma, sql: "SELECT COUNT(*) FROM orders o, customers c WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE", expect: [MAO005], ok: false}
+  - {id: cartesian_cross_join, sql: "SELECT COUNT(*) FROM products p CROSS JOIN categories c", expect: [MAO005], ok: false}
+  # ---------------------------------------------------------------- MAO006
+  - {id: fanout_sum, sql: "SELECT SUM(o.amount_cents) FROM orders o JOIN order_items i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.currency = 'EUR'", expect: [MAO006], ok: false}
+  - {id: fanout_avg, sql: "SELECT AVG(o.amount_cents) FROM orders o JOIN order_items i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.currency = 'EUR'", expect: [MAO006], ok: false}
+  - {id: fanout_count_column, sql: "SELECT COUNT(o.order_id) FROM orders o JOIN order_items i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE", expect: [MAO006], ok: false}
+  - {id: fanout_two_hops, sql: "SELECT c.country_code, SUM(o.amount_cents) FROM customers c JOIN orders o ON o.customer_id = c.customer_id JOIN order_items i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE AND o.currency = 'EUR' GROUP BY 1", expect: [MAO006], ok: false}
+  - {id: fanout_via_bridge, sql: "SELECT SUM(p.list_price) FROM products p JOIN product_categories pc ON pc.product_id = p.product_id", expect: [MAO006], ok: false}
+  # ---------------------------------------------------------------- MAO007
+  - {id: chasm_trap, sql: "SELECT c.customer_id, SUM(o.amount_cents), SUM(ab.balance) FROM customers c JOIN orders o ON o.customer_id = c.customer_id JOIN accounts a ON a.customer_id = c.customer_id JOIN account_balances ab ON ab.account_id = a.account_id WHERE COALESCE(c.is_deleted, FALSE) = FALSE AND COALESCE(o.is_deleted, FALSE) = FALSE GROUP BY 1", expect: [MAO007], ok: false}
+  - {id: chasm_trap_counts, sql: "SELECT c.customer_id, COUNT(o.order_id), COUNT(ad.address_id) FROM customers c JOIN orders o ON o.customer_id = c.customer_id JOIN addresses ad ON ad.customer_id = c.customer_id WHERE COALESCE(c.is_deleted, FALSE) = FALSE AND COALESCE(o.is_deleted, FALSE) = FALSE GROUP BY 1", expect: [MAO007], ok: false}
+  # ---------------------------------------------------------------- MAO008
+  - {id: metric_ambiguous, sql: "SELECT o.currency, SUM(o.amount_cents) FROM orders o WHERE COALESCE(o.is_deleted, FALSE) = FALSE GROUP BY 1", expect: [MAO008], ok: true}
+  - {id: metric_filter_applied, sql: "SELECT o.currency, SUM(o.amount_cents) * 0.01 FROM orders o WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.status NOT IN ('cancelled', 'returned') GROUP BY 1", forbid: [MAO008], ok: true}
+  - {id: metric_filter_in_case, sql: "SELECT o.currency, SUM(CASE WHEN o.status <> 'cancelled' THEN o.amount_cents END) FROM orders o WHERE COALESCE(o.is_deleted, FALSE) = FALSE GROUP BY 1", forbid: [MAO008], ok: true}
+  - {id: count_metric_filter_missing, sql: "SELECT COUNT(DISTINCT o.order_id) FROM orders o WHERE COALESCE(o.is_deleted, FALSE) = FALSE", expect: [MAO008], ok: true}
+  # ---------------------------------------------------------------- MAO009
+  - {id: soft_delete_missing, sql: "SELECT COUNT(*) FROM customers", expect: [MAO009], ok: true}
+  - {id: soft_delete_present, sql: "SELECT COUNT(*) FROM customers WHERE is_deleted = FALSE", forbid: [MAO009], ok: true}
+  - {id: scd2_current_missing, sql: "SELECT segment, COUNT(*) FROM customer_history GROUP BY 1", expect: [MAO009], ok: true}
+  - {id: scd2_current_present, sql: "SELECT segment, COUNT(*) FROM customer_history WHERE is_current = TRUE GROUP BY 1", forbid: [MAO009], ok: true}
+  # ---------------------------------------------------------------- MAO010
+  - {id: currency_mixed, sql: "SELECT SUM(amount_cents) FROM orders WHERE COALESCE(is_deleted, FALSE) = FALSE AND status NOT IN ('cancelled', 'returned')", expect: [MAO010], ok: true}
+  - {id: currency_grouped, sql: "SELECT currency, SUM(amount_cents) FROM orders WHERE COALESCE(is_deleted, FALSE) = FALSE AND status NOT IN ('cancelled', 'returned') GROUP BY currency", forbid: [MAO010], ok: true}
+  - {id: currency_filtered, sql: "SELECT SUM(amount_cents) FROM orders WHERE COALESCE(is_deleted, FALSE) = FALSE AND currency = 'EUR' AND status NOT IN ('cancelled', 'returned')", forbid: [MAO010], ok: true}
+  # ---------------------------------------------------------------- MAO011
+  - {id: semi_additive_over_time, sql: "SELECT SUM(balance) FROM account_balances", expect: [MAO011], ok: true}
+  - {id: semi_additive_one_day, sql: "SELECT SUM(balance) FROM account_balances WHERE snapshot_date = DATE '2024-01-30'", forbid: [MAO011], ok: true}
+  - {id: semi_additive_grouped, sql: "SELECT snapshot_date, SUM(balance) FROM account_balances GROUP BY snapshot_date", forbid: [MAO011], ok: true}
+  # ---------------------------------------------------------------- MAO012
+  - {id: sum_identifier, sql: "SELECT SUM(customer_id) FROM orders WHERE COALESCE(is_deleted, FALSE) = FALSE", expect: [MAO012], ok: false}
+  - {id: avg_identifier, sql: "SELECT AVG(product_id) FROM order_items", expect: [MAO012], ok: false}
+  # ---------------------------------------------------------------- MAO014 / MAO015
+  - {id: pii_output, sql: "SELECT email FROM customers WHERE COALESCE(is_deleted, FALSE) = FALSE", expect: [MAO014], ok: true}
+  - {id: pii_aggregated_ok, sql: "SELECT COUNT(DISTINCT email) FROM customers WHERE COALESCE(is_deleted, FALSE) = FALSE", forbid: [MAO014], ok: true}
+  - {id: minor_units, sql: "SELECT currency, SUM(amount_cents) FROM orders WHERE COALESCE(is_deleted, FALSE) = FALSE AND status NOT IN ('cancelled', 'returned') GROUP BY 1", expect: [MAO015], ok: true}
+  # ---------------------------------------------------------------- correct queries (no errors)
+  - {id: good_join, sql: "SELECT c.country_code, COUNT(DISTINCT o.order_id) FROM orders o JOIN customers c ON o.customer_id = c.customer_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE AND o.status <> 'cancelled' GROUP BY 1", forbid: [MAO004, MAO005, MAO006, MAO009], ok: true}
+  - {id: good_role_playing, sql: "SELECT a.city, COUNT(*) FROM orders o JOIN addresses a ON o.shipping_address_id = a.address_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE GROUP BY 1", forbid: [MAO004], ok: true}
+  - {id: good_cte_preaggregation, sql: "WITH items AS (SELECT order_id, SUM(quantity) AS units FROM order_items GROUP BY order_id) SELECT o.currency, SUM(o.amount_cents), SUM(i.units) FROM orders o JOIN items i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.status NOT IN ('cancelled', 'returned') GROUP BY 1", forbid: [MAO006, MAO007], ok: true}
+  - {id: good_bridge, sql: "SELECT c.category_name, COUNT(DISTINCT p.product_id) FROM products p JOIN product_categories pc ON pc.product_id = p.product_id JOIN categories c ON c.category_id = pc.category_id GROUP BY 1", forbid: [MAO004, MAO006], ok: true}
+  - {id: good_self_reference, sql: "SELECT m.full_name AS manager, COUNT(*) FROM employees e JOIN employees m ON e.manager_id = m.employee_id GROUP BY 1", forbid: [MAO004], ok: true}
+  - {id: good_count_distinct_after_fanout, sql: "SELECT COUNT(DISTINCT o.order_id) FROM orders o JOIN order_items i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.status <> 'cancelled'", forbid: [MAO006], ok: true}
+  - {id: good_snowflake_syntax, dialect: snowflake, sql: "SELECT DATE_TRUNC('MONTH', o.ordered_at) AS m, o.currency, SUM(o.amount_cents) * 0.01 AS rev FROM orders o WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.status NOT IN ('cancelled', 'returned') GROUP BY ALL QUALIFY ROW_NUMBER() OVER (PARTITION BY o.currency ORDER BY m DESC) <= 3", forbid: [MAO001, MAO003], ok: true}
+  - {id: good_tsql_syntax, dialect: tsql, sql: "SELECT TOP 10 c.country_code, COUNT(DISTINCT o.order_id) AS n FROM orders AS o JOIN customers AS c ON o.customer_id = c.customer_id WHERE o.is_deleted = 0 AND c.is_deleted = 0 AND o.status <> 'cancelled' GROUP BY c.country_code ORDER BY n DESC", forbid: [MAO001, MAO004], ok: true}
+  - {id: good_qualified_dataset, sql: "SELECT COUNT(*) FROM main.promos", forbid: [MAO002], ok: true}
+  # ---------------------------------------------------------------- review regressions (valid SQL shapes)
+  - {id: using_join, sql: "SELECT c.country_code, COUNT(*) FROM orders o JOIN customers c USING (customer_id) WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE GROUP BY 1", forbid: [MAO004, MAO005, MAO003], ok: true}
+  - {id: using_join_fanout, sql: "SELECT SUM(o.amount_cents) FROM orders o JOIN order_items i USING (order_id) WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.currency = 'EUR'", expect: [MAO006], forbid: [MAO005], ok: false}
+  - {id: natural_join, sql: "SELECT a.city FROM addresses a NATURAL JOIN customers c WHERE COALESCE(c.is_deleted, FALSE) = FALSE", forbid: [MAO005], ok: true}
+  - {id: alias_case, sql: "SELECT SUM(O.amount_cents) FROM orders O JOIN order_items I ON I.order_id = o.order_id WHERE COALESCE(O.is_deleted, FALSE) = FALSE AND O.currency = 'EUR'", expect: [MAO006], forbid: [MAO005], ok: false}
+  - {id: wrapped_join_key, sql: "SELECT COUNT(DISTINCT o.order_id) FROM orders o JOIN order_items i ON CAST(i.order_id AS BIGINT) = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.status <> 'cancelled'", forbid: [MAO005, MAO004], ok: true}
+  - {id: unnest_scope, sql: "SELECT o.order_id, u FROM orders o JOIN customers c ON o.customer_id = c.customer_id CROSS JOIN UNNEST([1, 2]) AS t(u) WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE", forbid: [MAO005, MAO009], ok: true}
+  - {id: cte_hidden_fanout, sql: "WITH x AS (SELECT o.amount_cents, o.currency FROM orders o JOIN order_items i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE) SELECT currency, SUM(amount_cents) FROM x GROUP BY 1", expect: [MAO006], ok: false}
+  - {id: derived_hidden_fanout, sql: "SELECT SUM(x.amount_cents) FROM (SELECT o.* FROM orders o JOIN order_items i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.currency = 'EUR') x", expect: [MAO006], ok: false}
+  - {id: passthrough_derived_fanout, sql: "SELECT SUM(o.amount_cents) FROM orders o JOIN (SELECT * FROM order_items) i ON i.order_id = o.order_id WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND o.currency = 'EUR'", expect: [MAO006], ok: false}
+  - {id: pii_star, sql: "SELECT * FROM customers WHERE COALESCE(is_deleted, FALSE) = FALSE", expect: [MAO014], ok: true}
+  - {id: pii_string_agg, sql: "SELECT country_code, STRING_AGG(email, ',') FROM customers WHERE COALESCE(is_deleted, FALSE) = FALSE GROUP BY 1", expect: [MAO014], ok: true}
+  - {id: pii_through_subquery, sql: "SELECT x.email FROM (SELECT email FROM customers WHERE COALESCE(is_deleted, FALSE) = FALSE) x", expect: [MAO014], ok: true}
+  - {id: pii_second_union_branch, sql: "SELECT country_code FROM customers WHERE COALESCE(is_deleted, FALSE) = FALSE UNION ALL SELECT email FROM customers WHERE COALESCE(is_deleted, FALSE) = FALSE", expect: [MAO014], ok: true}
+  - {id: currency_or_not_pinned, sql: "SELECT SUM(amount_cents) FROM orders WHERE COALESCE(is_deleted, FALSE) = FALSE AND status NOT IN ('cancelled', 'returned') AND (currency = 'EUR' OR currency = 'USD')", expect: [MAO010], ok: true}
+  - {id: currency_pinned_in_join, sql: "SELECT SUM(o.amount_cents) FROM customers c JOIN orders o ON o.customer_id = c.customer_id AND o.currency = 'EUR' WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE AND o.status NOT IN ('cancelled', 'returned')", forbid: [MAO010], ok: true}
+  - {id: non_additive_sum, sql: "SELECT SUM(unit_price) FROM order_items", expect: [MAO016], ok: true}
+  - {id: cartesian_beside_derived, sql: "SELECT COUNT(*) FROM orders o, customers c, (SELECT 1 AS one) d WHERE COALESCE(o.is_deleted, FALSE) = FALSE AND COALESCE(c.is_deleted, FALSE) = FALSE", expect: [MAO005], ok: false}

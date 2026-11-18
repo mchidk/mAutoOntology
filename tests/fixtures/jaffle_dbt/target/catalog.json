@@ -1,0 +1,26 @@
+{
+  "metadata": {"dbt_version": "1.10.0"},
+  "nodes": {
+    "model.jaffle_shop.customers": {
+      "metadata": {"type": "TABLE", "schema": "JAFFLE", "name": "CUSTOMERS", "database": "ANALYTICS"},
+      "columns": {
+        "CUSTOMER_ID": {"type": "NUMBER(38,0)", "index": 1, "name": "CUSTOMER_ID", "comment": null},
+        "FIRST_NAME": {"type": "VARCHAR", "index": 2, "name": "FIRST_NAME", "comment": null},
+        "CUSTOMER_TYPE": {"type": "VARCHAR", "index": 3, "name": "CUSTOMER_TYPE", "comment": null}
+      },
+      "stats": {"row_count": {"id": "row_count", "value": 935, "include": true}}
+    },
+    "model.jaffle_shop.orders": {
+      "metadata": {"type": "TABLE", "schema": "JAFFLE", "name": "ORDERS", "database": "ANALYTICS"},
+      "columns": {
+        "ORDER_ID": {"type": "NUMBER(38,0)", "index": 1, "name": "ORDER_ID", "comment": null},
+        "CUSTOMER_ID": {"type": "NUMBER(38,0)", "index": 2, "name": "CUSTOMER_ID", "comment": null},
+        "STATUS": {"type": "VARCHAR", "index": 3, "name": "STATUS", "comment": null},
+        "ORDER_TOTAL": {"type": "NUMBER(12,2)", "index": 4, "name": "ORDER_TOTAL", "comment": null},
+        "ORDERED_AT": {"type": "TIMESTAMP_NTZ", "index": 5, "name": "ORDERED_AT", "comment": null}
+      },
+      "stats": {"row_count": {"id": "row_count", "value": 61948, "include": true}}
+    }
+  },
+  "sources": {}
+}

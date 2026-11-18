@@ -1,0 +1,60 @@
+schema: mautoontology/v1
+kind: entity
+id: account
+label: Account
+domain: sales
+entity_type: dimension
+source:
+  dataset: accounts
+grain: [account_id]
+keys:
+  primary: [account_id]
+  unique:
+    - [customer_id]
+    - [account_number]
+attributes:
+  - id: account_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: customer_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: account_number
+    role: identifier
+    family: string
+    semantic_type: identifier
+    nullable: false
+relationships:
+  - id: account__customer
+    to: customer
+    on:
+      - from: customer_id
+        to: customer_id
+    cardinality: one_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 300/300 distinct values found in parent
+      - kind: uniqueness
+        ref: customers(customer_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.9
+        detail: exact key-name match
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: accounts(account_id)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

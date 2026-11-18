@@ -1,0 +1,65 @@
+schema: mautoontology/v1
+kind: entity
+id: employee
+label: Employee
+domain: sales
+entity_type: dimension
+source:
+  dataset: employees
+grain: [employee_id]
+keys:
+  primary: [employee_id]
+attributes:
+  - id: employee_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: manager_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: true
+  - id: full_name
+    role: dimension
+    family: string
+    semantic_type: name
+    pii: quasi_identifier
+    nullable: false
+  - id: work_email
+    role: dimension
+    family: string
+    semantic_type: email
+    pii: contact
+    nullable: false
+relationships:
+  - id: employee__manager_employee
+    to: employee
+    role: manager
+    on:
+      - from: manager_id
+        to: employee_id
+    cardinality: many_to_one
+    optional: true
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 3/3 distinct values found in parent
+      - kind: uniqueness
+        ref: employees(employee_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.35
+        detail: self-reference hint
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: employees(employee_id)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

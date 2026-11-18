@@ -1,0 +1,842 @@
+{
+  "datasets": {
+    "account_balances": {
+      "approx": false,
+      "columns": {
+        "account_id": {
+          "distinct": 300,
+          "max": 300,
+          "min": 1,
+          "non_null": 9000
+        },
+        "balance": {
+          "distinct": 4019,
+          "max": 5103,
+          "min": 1013,
+          "non_null": 9000
+        },
+        "snapshot_date": {
+          "distinct": 30,
+          "max": "2024-01-30",
+          "min": "2024-01-01",
+          "non_null": 9000
+        }
+      },
+      "row_count": 9000,
+      "sampled": false,
+      "unique_keys": [
+        [
+          "account_id",
+          "snapshot_date"
+        ]
+      ]
+    },
+    "accounts": {
+      "approx": false,
+      "columns": {
+        "account_id": {
+          "distinct": 300,
+          "max": 300,
+          "min": 1,
+          "non_null": 300
+        },
+        "account_number": {
+          "distinct": 300,
+          "non_null": 300
+        },
+        "customer_id": {
+          "distinct": 300,
+          "max": 300,
+          "min": 1,
+          "non_null": 300
+        }
+      },
+      "row_count": 300,
+      "sampled": false
+    },
+    "addresses": {
+      "approx": false,
+      "columns": {
+        "address_id": {
+          "distinct": 700,
+          "max": 700,
+          "min": 1,
+          "non_null": 700
+        },
+        "city": {
+          "distinct": 5,
+          "non_null": 700,
+          "values": [
+            [
+              "Aarhus",
+              140
+            ],
+            [
+              "Austin",
+              140
+            ],
+            [
+              "Berlin",
+              140
+            ],
+            [
+              "Copenhagen",
+              140
+            ],
+            [
+              "Malmo",
+              140
+            ]
+          ],
+          "values_complete": true
+        },
+        "customer_id": {
+          "distinct": 400,
+          "max": 400,
+          "min": 1,
+          "non_null": 700
+        },
+        "postal_code": {
+          "distinct": 700,
+          "non_null": 700
+        }
+      },
+      "row_count": 700,
+      "sampled": false
+    },
+    "categories": {
+      "approx": false,
+      "columns": {
+        "category_id": {
+          "distinct": 20,
+          "max": 20,
+          "min": 1,
+          "non_null": 20
+        },
+        "category_name": {
+          "distinct": 20,
+          "non_null": 20
+        },
+        "parent_category_id": {
+          "distinct": 4,
+          "max": 4,
+          "min": 1,
+          "non_null": 16
+        }
+      },
+      "row_count": 20,
+      "sampled": false
+    },
+    "customer_history": {
+      "approx": false,
+      "columns": {
+        "customer_id": {
+          "distinct": 400,
+          "max": 400,
+          "min": 1,
+          "non_null": 533
+        },
+        "customer_sk": {
+          "distinct": 533,
+          "max": 533,
+          "min": 1,
+          "non_null": 533
+        },
+        "is_current": {
+          "distinct": 2,
+          "non_null": 533,
+          "values": [
+            [
+              true,
+              400
+            ],
+            [
+              false,
+              133
+            ]
+          ],
+          "values_complete": true
+        },
+        "segment": {
+          "distinct": 2,
+          "non_null": 533,
+          "values": [
+            [
+              "standard",
+              400
+            ],
+            [
+              "premium",
+              133
+            ]
+          ],
+          "values_complete": true
+        },
+        "valid_from": {
+          "distinct": 2,
+          "max": "2024-06-01",
+          "min": "2023-01-01",
+          "non_null": 533
+        },
+        "valid_to": {
+          "distinct": 1,
+          "max": "2024-06-01",
+          "min": "2024-06-01",
+          "non_null": 133
+        }
+      },
+      "row_count": 533,
+      "sampled": false
+    },
+    "customers": {
+      "approx": false,
+      "columns": {
+        "country_code": {
+          "distinct": 4,
+          "non_null": 400
+        },
+        "created_at": {
+          "distinct": 400,
+          "max": "2024-02-05T00:00:00",
+          "min": "2023-01-02T00:00:00",
+          "non_null": 400
+        },
+        "customer_id": {
+          "distinct": 400,
+          "max": 400,
+          "min": 1,
+          "non_null": 400
+        },
+        "email": {
+          "distinct": 400,
+          "non_null": 400
+        },
+        "full_name": {
+          "distinct": 400,
+          "non_null": 400
+        },
+        "is_deleted": {
+          "distinct": 2,
+          "non_null": 400,
+          "values": [
+            [
+              false,
+              384
+            ],
+            [
+              true,
+              16
+            ]
+          ],
+          "values_complete": true
+        }
+      },
+      "row_count": 400,
+      "sampled": false
+    },
+    "employees": {
+      "approx": false,
+      "columns": {
+        "employee_id": {
+          "distinct": 60,
+          "max": 60,
+          "min": 1,
+          "non_null": 60
+        },
+        "full_name": {
+          "distinct": 60,
+          "non_null": 60
+        },
+        "manager_id": {
+          "distinct": 3,
+          "max": 3,
+          "min": 1,
+          "non_null": 57
+        },
+        "work_email": {
+          "distinct": 60,
+          "non_null": 60
+        }
+      },
+      "row_count": 60,
+      "sampled": false
+    },
+    "order_items": {
+      "approx": false,
+      "columns": {
+        "line_no": {
+          "distinct": 3,
+          "max": 3,
+          "min": 1,
+          "non_null": 6000
+        },
+        "order_id": {
+          "distinct": 3000,
+          "max": 3000,
+          "min": 1,
+          "non_null": 6000
+        },
+        "product_id": {
+          "distinct": 120,
+          "max": 120,
+          "min": 1,
+          "non_null": 6000
+        },
+        "quantity": {
+          "distinct": 5,
+          "max": 5,
+          "min": 1,
+          "non_null": 6000
+        },
+        "unit_price": {
+          "distinct": 40,
+          "max": 102.5,
+          "min": 5,
+          "non_null": 6000
+        }
+      },
+      "non_unique_keys": [
+        [
+          "line_no",
+          "product_id"
+        ]
+      ],
+      "row_count": 6000,
+      "sampled": false,
+      "unique_keys": [
+        [
+          "order_id",
+          "line_no"
+        ],
+        [
+          "order_id",
+          "product_id"
+        ]
+      ]
+    },
+    "orders": {
+      "approx": false,
+      "columns": {
+        "amount_cents": {
+          "distinct": 3000,
+          "max": 50987,
+          "min": 1011,
+          "non_null": 3000
+        },
+        "billing_address_id": {
+          "distinct": 700,
+          "max": 700,
+          "min": 1,
+          "non_null": 3000
+        },
+        "currency": {
+          "distinct": 3,
+          "non_null": 3000,
+          "values": [
+            [
+              "DKK",
+              1000
+            ],
+            [
+              "EUR",
+              1000
+            ],
+            [
+              "USD",
+              1000
+            ]
+          ],
+          "values_complete": true
+        },
+        "customer_id": {
+          "distinct": 400,
+          "max": 400,
+          "min": 1,
+          "non_null": 3000
+        },
+        "is_deleted": {
+          "distinct": 2,
+          "non_null": 3000,
+          "values": [
+            [
+              false,
+              2940
+            ],
+            [
+              true,
+              60
+            ]
+          ],
+          "values_complete": true
+        },
+        "order_id": {
+          "distinct": 3000,
+          "max": 3000,
+          "min": 1,
+          "non_null": 3000
+        },
+        "ordered_at": {
+          "distinct": 3000,
+          "max": "2025-01-10T08:00:00",
+          "min": "2024-01-01T11:00:00",
+          "non_null": 3000
+        },
+        "promo_id": {
+          "distinct": 15,
+          "max": 156,
+          "min": 100,
+          "non_null": 750
+        },
+        "shipping_address_id": {
+          "distinct": 700,
+          "max": 700,
+          "min": 1,
+          "non_null": 3000
+        },
+        "status": {
+          "distinct": 4,
+          "non_null": 3000,
+          "values": [
+            [
+              "shipped",
+              2100
+            ],
+            [
+              "cancelled",
+              300
+            ],
+            [
+              "placed",
+              300
+            ],
+            [
+              "returned",
+              300
+            ]
+          ],
+          "values_complete": true
+        },
+        "tracking_id": {
+          "distinct": 3000,
+          "non_null": 3000
+        }
+      },
+      "row_count": 3000,
+      "sampled": false
+    },
+    "product_categories": {
+      "approx": false,
+      "columns": {
+        "category_id": {
+          "distinct": 20,
+          "max": 20,
+          "min": 1,
+          "non_null": 400
+        },
+        "product_id": {
+          "distinct": 120,
+          "max": 120,
+          "min": 1,
+          "non_null": 400
+        }
+      },
+      "row_count": 400,
+      "sampled": false,
+      "unique_keys": [
+        [
+          "product_id",
+          "category_id"
+        ]
+      ]
+    },
+    "products": {
+      "approx": false,
+      "columns": {
+        "category_code": {
+          "distinct": 7,
+          "non_null": 120
+        },
+        "list_price": {
+          "distinct": 40,
+          "max": 102.5,
+          "min": 5,
+          "non_null": 120
+        },
+        "product_id": {
+          "distinct": 120,
+          "max": 120,
+          "min": 1,
+          "non_null": 120
+        },
+        "product_name": {
+          "distinct": 120,
+          "non_null": 120
+        }
+      },
+      "row_count": 120,
+      "sampled": false
+    },
+    "promos": {
+      "approx": false,
+      "columns": {
+        "promo_code": {
+          "distinct": 5,
+          "non_null": 5
+        },
+        "promo_id": {
+          "distinct": 5,
+          "max": 5,
+          "min": 1,
+          "non_null": 5
+        }
+      },
+      "row_count": 5,
+      "sampled": false
+    },
+    "shipments": {
+      "approx": false,
+      "columns": {
+        "order_id": {
+          "distinct": 2400,
+          "max": 3000,
+          "min": 3,
+          "non_null": 2400
+        },
+        "shipment_id": {
+          "distinct": 2400,
+          "max": 52400,
+          "min": 50001,
+          "non_null": 2400
+        },
+        "shipped_at": {
+          "distinct": 2400,
+          "max": "2025-01-12T08:00:00",
+          "min": "2024-01-03T17:00:00",
+          "non_null": 2400
+        }
+      },
+      "row_count": 2400,
+      "sampled": false
+    }
+  },
+  "dialect": "duckdb",
+  "inclusions": [
+    {
+      "child": "account_balances",
+      "child_columns": [
+        "account_id"
+      ],
+      "child_distinct": 300,
+      "child_non_null": 9000,
+      "child_rows": 9000,
+      "matched_distinct": 300,
+      "parent": "accounts",
+      "parent_columns": [
+        "account_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "accounts",
+      "child_columns": [
+        "customer_id"
+      ],
+      "child_distinct": 300,
+      "child_non_null": 300,
+      "child_rows": 300,
+      "matched_distinct": 300,
+      "parent": "customers",
+      "parent_columns": [
+        "customer_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "addresses",
+      "child_columns": [
+        "customer_id"
+      ],
+      "child_distinct": 400,
+      "child_non_null": 700,
+      "child_rows": 700,
+      "matched_distinct": 300,
+      "parent": "accounts",
+      "parent_columns": [
+        "customer_id"
+      ],
+      "ratio": 0.75
+    },
+    {
+      "child": "addresses",
+      "child_columns": [
+        "customer_id"
+      ],
+      "child_distinct": 400,
+      "child_non_null": 700,
+      "child_rows": 700,
+      "matched_distinct": 400,
+      "parent": "customers",
+      "parent_columns": [
+        "customer_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "categories",
+      "child_columns": [
+        "parent_category_id"
+      ],
+      "child_distinct": 4,
+      "child_non_null": 16,
+      "child_rows": 20,
+      "matched_distinct": 4,
+      "parent": "categories",
+      "parent_columns": [
+        "category_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "customer_history",
+      "child_columns": [
+        "customer_id"
+      ],
+      "child_distinct": 400,
+      "child_non_null": 533,
+      "child_rows": 533,
+      "matched_distinct": 300,
+      "parent": "accounts",
+      "parent_columns": [
+        "customer_id"
+      ],
+      "ratio": 0.75
+    },
+    {
+      "child": "customer_history",
+      "child_columns": [
+        "customer_id"
+      ],
+      "child_distinct": 400,
+      "child_non_null": 533,
+      "child_rows": 533,
+      "matched_distinct": 400,
+      "parent": "customers",
+      "parent_columns": [
+        "customer_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "customers",
+      "child_columns": [
+        "customer_id"
+      ],
+      "child_distinct": 400,
+      "child_non_null": 400,
+      "child_rows": 400,
+      "matched_distinct": 300,
+      "parent": "accounts",
+      "parent_columns": [
+        "customer_id"
+      ],
+      "ratio": 0.75
+    },
+    {
+      "child": "order_items",
+      "child_columns": [
+        "order_id"
+      ],
+      "child_distinct": 3000,
+      "child_non_null": 6000,
+      "child_rows": 6000,
+      "matched_distinct": 3000,
+      "parent": "orders",
+      "parent_columns": [
+        "order_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "order_items",
+      "child_columns": [
+        "order_id"
+      ],
+      "child_distinct": 3000,
+      "child_non_null": 6000,
+      "child_rows": 6000,
+      "matched_distinct": 2400,
+      "parent": "shipments",
+      "parent_columns": [
+        "order_id"
+      ],
+      "ratio": 0.8
+    },
+    {
+      "child": "order_items",
+      "child_columns": [
+        "product_id"
+      ],
+      "child_distinct": 120,
+      "child_non_null": 6000,
+      "child_rows": 6000,
+      "matched_distinct": 120,
+      "parent": "products",
+      "parent_columns": [
+        "product_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "orders",
+      "child_columns": [
+        "order_id"
+      ],
+      "child_distinct": 3000,
+      "child_non_null": 3000,
+      "child_rows": 3000,
+      "matched_distinct": 2400,
+      "parent": "shipments",
+      "parent_columns": [
+        "order_id"
+      ],
+      "ratio": 0.8
+    },
+    {
+      "child": "orders",
+      "child_columns": [
+        "customer_id"
+      ],
+      "child_distinct": 400,
+      "child_non_null": 3000,
+      "child_rows": 3000,
+      "matched_distinct": 300,
+      "parent": "accounts",
+      "parent_columns": [
+        "customer_id"
+      ],
+      "ratio": 0.75
+    },
+    {
+      "child": "orders",
+      "child_columns": [
+        "customer_id"
+      ],
+      "child_distinct": 400,
+      "child_non_null": 3000,
+      "child_rows": 3000,
+      "matched_distinct": 400,
+      "parent": "customers",
+      "parent_columns": [
+        "customer_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "orders",
+      "child_columns": [
+        "billing_address_id"
+      ],
+      "child_distinct": 700,
+      "child_non_null": 3000,
+      "child_rows": 3000,
+      "matched_distinct": 700,
+      "parent": "addresses",
+      "parent_columns": [
+        "address_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "orders",
+      "child_columns": [
+        "shipping_address_id"
+      ],
+      "child_distinct": 700,
+      "child_non_null": 3000,
+      "child_rows": 3000,
+      "matched_distinct": 700,
+      "parent": "addresses",
+      "parent_columns": [
+        "address_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "orders",
+      "child_columns": [
+        "promo_id"
+      ],
+      "child_distinct": 15,
+      "child_non_null": 750,
+      "child_rows": 3000,
+      "matched_distinct": 0,
+      "parent": "promos",
+      "parent_columns": [
+        "promo_id"
+      ],
+      "ratio": 0.0
+    },
+    {
+      "child": "product_categories",
+      "child_columns": [
+        "product_id"
+      ],
+      "child_distinct": 120,
+      "child_non_null": 400,
+      "child_rows": 400,
+      "matched_distinct": 120,
+      "parent": "products",
+      "parent_columns": [
+        "product_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "product_categories",
+      "child_columns": [
+        "category_id"
+      ],
+      "child_distinct": 20,
+      "child_non_null": 400,
+      "child_rows": 400,
+      "matched_distinct": 20,
+      "parent": "categories",
+      "parent_columns": [
+        "category_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "shipments",
+      "child_columns": [
+        "order_id"
+      ],
+      "child_distinct": 2400,
+      "child_non_null": 2400,
+      "child_rows": 2400,
+      "matched_distinct": 2400,
+      "parent": "orders",
+      "parent_columns": [
+        "order_id"
+      ],
+      "ratio": 1.0
+    },
+    {
+      "child": "employees",
+      "child_columns": [
+        "manager_id"
+      ],
+      "child_distinct": 3,
+      "child_non_null": 57,
+      "child_rows": 60,
+      "matched_distinct": 3,
+      "parent": "employees",
+      "parent_columns": [
+        "employee_id"
+      ],
+      "ratio": 1.0
+    }
+  ],
+  "stage2": true,
+  "version": 1
+}

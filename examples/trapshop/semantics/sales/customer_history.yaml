@@ -1,0 +1,89 @@
+schema: mautoontology/v1
+kind: entity
+id: customer_history
+label: Customer History
+domain: sales
+entity_type: history
+source:
+  dataset: customer_history
+grain: [customer_sk]
+keys:
+  primary: [customer_sk]
+history:
+  type: scd2
+  valid_from: valid_from
+  valid_to: valid_to
+  current: is_current = TRUE
+default_filters:
+  - id: current_version
+    sql: is_current = TRUE
+    reason: scd2_current
+    description: Keep only the current version of each record unless an as-of query is intended.
+attributes:
+  - id: customer_sk
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: customer_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: segment
+    role: dimension
+    family: string
+    semantic_type: enum
+    values: [standard, premium]
+    values_complete: true
+    nullable: false
+    evidence:
+      - kind: profile
+        detail: 2 distinct values observed
+  - id: valid_from
+    role: time
+    family: date
+    time:
+      grains: [day, week, month, quarter, year]
+    nullable: false
+  - id: valid_to
+    role: time
+    family: date
+    time:
+      grains: [day, week, month, quarter, year]
+    nullable: true
+  - id: is_current
+    role: dimension
+    family: boolean
+    semantic_type: flag
+    nullable: false
+relationships:
+  - id: customer_history__customer
+    to: customer
+    on:
+      - from: customer_id
+        to: customer_id
+    cardinality: many_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 400/400 distinct values found in parent
+      - kind: uniqueness
+        ref: customers(customer_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.9
+        detail: exact key-name match
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: customer_history(customer_sk)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

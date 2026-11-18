@@ -1,0 +1,70 @@
+schema: mautoontology/v1
+kind: entity
+id: address
+label: Address
+domain: sales
+entity_type: dimension
+source:
+  dataset: addresses
+grain: [address_id]
+keys:
+  primary: [address_id]
+  unique:
+    - [postal_code]
+attributes:
+  - id: address_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: customer_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: city
+    role: dimension
+    family: string
+    semantic_type: city
+    values: [Aarhus, Austin, Berlin, Copenhagen, Malmo]
+    values_complete: true
+    nullable: false
+    evidence:
+      - kind: profile
+        detail: 5 distinct values observed
+  - id: postal_code
+    role: identifier
+    family: string
+    semantic_type: identifier
+    pii: quasi_identifier
+    nullable: false
+relationships:
+  - id: address__customer
+    to: customer
+    on:
+      - from: customer_id
+        to: customer_id
+    cardinality: many_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 400/400 distinct values found in parent
+      - kind: uniqueness
+        ref: customers(customer_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.9
+        detail: exact key-name match
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: addresses(address_id)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

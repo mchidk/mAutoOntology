@@ -1,0 +1,20 @@
+schema: mautoontology/v1
+kind: glossary
+terms:
+  - id: revenue
+    definition: Money from orders. Means net revenue unless the user explicitly says gross.
+    synonyms: [turnover]
+    maps_to: [metric:net_revenue, metric:gross_revenue]
+    disambiguation: Default to net_revenue and say that returns are excluded.
+    status: approved
+    reviewed_by: finance
+  - id: nordic_customer
+    definition: A customer in Denmark or Sweden.
+    maps_to: [segment:customer.nordic]
+    status: approved
+    reviewed_by: data-team
+  - id: basket_size
+    definition: Average order value (net revenue per order).
+    maps_to: [metric:average_order_value]
+    status: approved
+    reviewed_by: finance

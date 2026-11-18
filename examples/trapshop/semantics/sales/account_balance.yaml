@@ -1,0 +1,65 @@
+schema: mautoontology/v1
+kind: entity
+id: account_balance
+label: Account Balance
+description: Daily end-of-day balance per account (periodic snapshot).
+domain: sales
+entity_type: snapshot
+source:
+  dataset: account_balances
+grain: [account_id, snapshot_date]
+keys:
+  primary: [account_id, snapshot_date]
+history:
+  type: snapshot
+  snapshot_at: snapshot_date
+attributes:
+  - id: account_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: snapshot_date
+    role: time
+    family: date
+    nullable: false
+  - id: balance
+    role: measure
+    family: decimal
+    semantic_type: money
+    aggregation: sum
+    additivity: semi_additive
+    non_additive_over: snapshot_date
+    nullable: false
+    money:
+      currency: EUR
+relationships:
+  - id: account_balance__account
+    to: account
+    on:
+      - from: account_id
+        to: account_id
+    cardinality: many_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 300/300 distinct values found in parent
+      - kind: uniqueness
+        ref: accounts(account_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.9
+        detail: exact key-name match
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: account_balances(account_id, snapshot_date)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'

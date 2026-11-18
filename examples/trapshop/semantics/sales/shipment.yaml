@@ -1,0 +1,60 @@
+schema: mautoontology/v1
+kind: entity
+id: shipment
+label: Shipment
+domain: sales
+entity_type: dimension
+source:
+  dataset: shipments
+grain: [shipment_id]
+keys:
+  primary: [shipment_id]
+  unique:
+    - [order_id]
+attributes:
+  - id: shipment_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: order_id
+    role: identifier
+    family: integer
+    semantic_type: identifier
+    nullable: false
+  - id: shipped_at
+    role: time
+    family: timestamp
+    time:
+      grains: [hour, day, week, month, quarter, year]
+    nullable: false
+relationships:
+  - id: shipment__order
+    to: order
+    on:
+      - from: order_id
+        to: order_id
+    cardinality: one_to_one
+    optional: false
+    status: approved
+    origin: generated
+    evidence:
+      - kind: inclusion
+        score: 1.0
+        detail: 2400/2400 distinct values found in parent
+      - kind: uniqueness
+        ref: orders(order_id)
+        score: 1.0
+      - kind: name_match
+        score: 0.9
+        detail: exact key-name match
+    reviewed_by: data-team
+    reviewed_at: '2026-11-18'
+status: approved
+origin: generated
+evidence:
+  - kind: uniqueness
+    ref: shipments(shipment_id)
+    score: 1.0
+reviewed_by: data-team
+reviewed_at: '2026-11-18'
